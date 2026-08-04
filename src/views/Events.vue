@@ -2,7 +2,7 @@
   <div class="p-4 sm:p-6 max-w-4xl mx-auto">
     <div class="flex items-center mb-8 border-b border-gray-200 dark:border-gray-700 pb-4">
       <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Agenda de Eventos</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Agenda de Eventos Futuros</h1>
     </div>
 
     <div v-if="loading" class="flex justify-center py-20">
@@ -14,7 +14,7 @@
       <p class="text-sm mt-1">{{ error }}</p>
     </div>
 
-    <div v-else-if="events.length > 0" class="space-y-4">
+    <div v-else-if="sortedEvents.length > 0" class="space-y-4">
       <div v-for="event in sortedEvents" :key="event.id" class="flex flex-col sm:flex-row bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-750 overflow-hidden hover:shadow-md transition-shadow">
 
         <!-- Fecha Destacada Izquierda -->
@@ -62,7 +62,10 @@ const loading = ref(true);
 const error = ref(null);
 
 const sortedEvents = computed(() => {
-  return [...events.value].sort((a, b) => a.timestart - b.timestart);
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  return events.value
+    .filter(event => event.timestart >= currentTimestamp)
+    .sort((a, b) => a.timestart - b.timestart);
 });
 
 // Utilidades de formato de fecha

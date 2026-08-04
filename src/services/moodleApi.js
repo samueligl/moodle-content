@@ -68,10 +68,14 @@ const moodleService = {
    * @param {number|string} courseId ID del curso
    */
   async getCourseContents(courseId) {
+    if (!moodleUrl || !moodleToken) {
+      throw new Error("Falta configurar VITE_MOODLE_URL o VITE_MOODLE_TOKEN en tu archivo .env");
+    }
+    const parsedCourseId = parseInt(courseId, 10);
     const response = await apiClient.post('', null, {
       params: {
         wsfunction: 'core_course_get_contents',
-        courseid: courseId,
+        courseid: parsedCourseId,
       }
     });
     return Array.isArray(response.data) ? response.data : [];
@@ -81,6 +85,9 @@ const moodleService = {
    * Obtiene los próximos eventos del calendario.
    */
   async getCalendarEvents() {
+    if (!moodleUrl || !moodleToken) {
+      throw new Error("Falta configurar VITE_MOODLE_URL o VITE_MOODLE_TOKEN en tu archivo .env");
+    }
     const response = await apiClient.post('', null, {
       params: { wsfunction: 'core_calendar_get_calendar_events' }
     });
@@ -97,9 +104,12 @@ const moodleService = {
    * @param {number|string} courseId ID del curso (opcional dependiendo de la implementación)
    */
   async getAttendanceSessions(courseId = null) {
+    if (!moodleUrl || !moodleToken) {
+      throw new Error("Falta configurar VITE_MOODLE_URL o VITE_MOODLE_TOKEN en tu archivo .env");
+    }
     const params = { wsfunction: 'mod_attendance_get_sessions' };
     if (courseId) {
-      params.courseid = courseId;
+      params.courseid = parseInt(courseId, 10);
     }
     const response = await apiClient.post('', null, { params });
     const data = response.data;
